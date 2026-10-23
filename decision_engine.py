@@ -132,8 +132,15 @@ Requirements:
             },
             json=request_body,
         )
-        response.raise_for_status()
-        result = response.json()
+        if response.is_error:
+    		print(
+        		"AI provider error:",
+        		response.status_code,
+        		response.text[:1000],
+        		flush=True,
+    	)
+	response.raise_for_status()
+	result = response.json()
 
     try:
         content = result["choices"][0]["message"]["content"]
