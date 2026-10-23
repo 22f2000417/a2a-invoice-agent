@@ -427,8 +427,12 @@ async def send_message(request: Request):
             return error(400, "INVALID_BATCH")
         context_id = message.get("contextId") or str(uuid.uuid4())
         try:
-            proposals = cached_decisions(data["batchId"], data["policyRevision"], data["packages"])
-        except Exception:
+            proposals = cached_decisions(
+                data["batchId"], data["policyRevision"], data["packages"]
+            )
+        except Exception as exc:
+            import logging
+            logging.exception("Decision engine failed: %s", type(exc).__name__)
             return error(502, "DECISION_ENGINE_FAILED")
         for p in proposals:
             p["actionId"] = str(uuid.uuid4())
